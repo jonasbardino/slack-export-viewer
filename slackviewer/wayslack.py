@@ -11,10 +11,13 @@ individual user dirs in _private/default/_ims .
 """
 
 import click
+import io
 import json
 import logging
 import os
 import sys
+
+from slackviewer.utils.click import envvar
 
 _log_levels = {'DEBUG': logging.DEBUG, 'INFO': logging.INFO,
                'WARNING': logging.WARNING, 'ERROR': logging.ERROR,
@@ -29,12 +32,11 @@ def prepare_for_sev(wayslack_base, own_slack_id):
 
     # Load ims and extend with members for each before writing to dms
     try:
-        ims_fd = open(ims_json_path, "rb")
-        ims_contents = json.load(ims_fd)
-        ims_fd.close()
+        with io.open(os.path.join(ims_json_path), encoding="utf8") as f:
+            ims_contents = json.load(f)
         logging.info("loaded %d ims entries from %s" % (len(ims_contents),
                                                         ims_json_path))
-    except Exception, exc:
+    except Exception as exc:
         logging.error("failed to load ims from %s : %s" % (ims_json_path, exc))
         return 1
     logging.debug("loaded ims contents: %s" % ims_contents)
@@ -52,7 +54,7 @@ def prepare_for_sev(wayslack_base, own_slack_id):
             if not os.path.exists(link_path):
                 logging.info("symlinked %s to %s" % (link_path, msg_base))
                 os.symlink(msg_base, link_path)
-        except Exception, exc:
+        except Exception as exc:
             logging.warning("failed to link %s here : %s" % (msg_base, exc))
             continue
         entry["members"] = [own_slack_id, entry["user"]]
@@ -62,29 +64,29 @@ def prepare_for_sev(wayslack_base, own_slack_id):
     logging.info("skipped %d user entries without chats" % len(skipped))
     logging.debug("saving generated dms %s" % dms_contents)
     try:
-        dms_fd = open(dms_json_path, "wb")
-        json.dump(dms_contents, dms_fd)
-        dms_fd.close()
+        with io.open(os.path.join(dms_json_path), "w", encoding="utf8") as f:
+            json.dump(dms_contents, f)
         logging.info("saved %d generated dms entries to %s" % \
                      (len(dms_contents), dms_json_path))
-    except Exception, exc:
+    except Exception as exc:
         logging.error("failed to save dms to %s : %s" % (dms_json_path, exc))
         return 1
+    logging.info("Now run slack-export-viewer with %s as target archive" % \
+                 wayslack_base)
     return 0
 
-@cli.command(help="Prepares wayslack dump for slack-export-viewer run")
-@click.option("-z", "--archive", type=click.Path(), required=True,
-              default=envvar('SEV_ARCHIVE', ''),
+@click.command(help="Prepares wayslack dump for slack-export-viewer run")
+@click.option("-z", "--archive", type=click.Path(),
+              default=envvar('SEV_ARCHIVE', '.'),
               help="Path to your wayslack dump (directory)")
-@click.option("-u", "--user_id", is_flag=True,
-              default=flag_envvar('SEV_USER_ID', ''), required=True,
+@click.option("-u", "--user_id", required=True,
               help="Your own SLACK identity string from users.json")
-@click.option("l", "--log_level", is_flag=True,
-              default=flag_envvar('SEV_LOG_LEVEL', 'INFO'), 
+@click.option("-l", "--log_level", default='INFO',
               help="Amount of output using standard level names (%s)" % \
-              ', '.join(_log_levels.keys()))
+              ', '.join(list(_log_levels.keys())))
 def main(archive, user_id, log_level):
-    if not log_level.upper() in _log_levels:
+    log_level = log_level.upper()
+    if not log_level in _log_levels:
         log_level = "INFO"
     logging.basicConfig(stream=sys.stdout, level=_log_levels[log_level],
                         format='%(asctime)s %(levelname)s %(message)s')
