@@ -20,7 +20,9 @@ def channel_name(name):
                                  name=name.format(name=name),
                                  channels=sorted(channels),
                                  groups=sorted(groups),
-                                 dm_users=sorted(dm_users),
+                                 # NOTE: dm_users is a list of dicts so no sort!
+                                 #dm_users=sorted(dm_users),
+                                 dm_users=sorted(dm_users, key=lambda d: d["id"]),
                                  mpim_users=sorted(mpim_users))
 
 
@@ -36,7 +38,9 @@ def group_name(name):
                                  name=name.format(name=name),
                                  channels=sorted(channels),
                                  groups=sorted(groups),
-                                 dm_users=sorted(dm_users),
+                                 # NOTE: dm_users is a list of dicts so no sort!
+                                 #dm_users=sorted(dm_users),
+                                 dm_users=sorted(dm_users, key=lambda d: d["id"]),
                                  mpim_users=sorted(mpim_users))
 
 
@@ -52,7 +56,9 @@ def dm_id(id):
                                  id=id.format(id=id),
                                  channels=sorted(channels),
                                  groups=sorted(groups),
-                                 dm_users=sorted(dm_users),
+                                 # NOTE: dm_users is a list of dicts so no sort!
+                                 #dm_users=sorted(dm_users),
+                                 dm_users=sorted(dm_users, key=lambda d: d["id"]),
                                  mpim_users=sorted(mpim_users))
 
 
@@ -68,7 +74,9 @@ def mpim_name(name):
                                  name=name.format(name=name),
                                  channels=sorted(channels),
                                  groups=sorted(groups),
-                                 dm_users=sorted(dm_users),
+                                 # NOTE: dm_users is a list of dicts so no sort!
+                                 #dm_users=sorted(dm_users),
+                                 dm_users=sorted(dm_users, key=lambda d: d["id"]),
                                  mpim_users=sorted(mpim_users))
 
 

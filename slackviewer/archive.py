@@ -200,7 +200,7 @@ def extract_archive(filepath):
                 ".slackviewer_archive_info.json"
             ), 'w+'
         ) as f:
-            json.dump(archive_info, f)
+            json.dump(u"%s" % archive_info, f)
 
     return extracted_path
 
