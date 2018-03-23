@@ -1,5 +1,8 @@
 # Slack Export Viewer
 
+[![Build Status](https://travis-ci.org/hfaran/slack-export-viewer.svg?branch=master)](https://travis-ci.org/hfaran/slack-export-viewer)
+[![PyPI version](https://badge.fury.io/py/slack-export-viewer.svg)](http://badge.fury.io/py/slack-export-viewer)
+
 A Slack Export archive viewer that allows you to easily view and share your 
 Slack team's export (instead of having to dive into hundreds of JSON files).
 
@@ -72,6 +75,31 @@ slack-export-viewer -z /path/to/export/zip
 
 If everything went well, your archive will have been extracted, processed, and browser window will have opened showing your *#general* channel from the export.
 
+## CLI
+
+There is now a CLI included as well. Currently the one command you can use is clearing the cache from slack-export-viewer from your %TEMP% directory; see usage:
+
+```
+└———→ slack-export-viewer-cli --help
+Usage: slack-export-viewer-cli [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  clean  Cleans up any temporary files (including...
+```
+
+### Examples
+
+```
+┌— hamza@AURORAONE C:\Users\hamza
+└———→ slack-export-viewer-cli clean
+Run with -w to remove C:\Users\hamza\AppData\Local\Temp\_slackviewer
+┌— hamza@AURORAONE C:\Users\hamza
+└———→ slack-export-viewer-cli clean -w
+Removing C:\Users\hamza\AppData\Local\Temp\_slackviewer...
+```
 
 ## Acknowledgements
 

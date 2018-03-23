@@ -1,7 +1,7 @@
 import os
 import codecs
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 import slackviewer
 
@@ -30,10 +30,11 @@ setup(
     author_email='hamzafaran@outlook.com',
     description=('Slack Export Archive Viewer'),
     long_description=long_description,
-    packages=["slackviewer"],
-    install_requires = install_requires,
+    packages=find_packages(),
+    install_requires=install_requires,
     entry_points={'console_scripts': [
-        'slack-export-viewer = slackviewer.main:main'
+        'slack-export-viewer = slackviewer.main:main',
+        'slack-export-viewer-cli = slackviewer.cli:cli'
     ]},
     include_package_data=True,
     # https://github.com/mitsuhiko/flask/issues/1562

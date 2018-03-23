@@ -1,4 +1,3 @@
-import os
 import webbrowser
 
 import click
@@ -19,19 +18,7 @@ from slackviewer.archive import \
     compile_dm_users, \
     compile_mpims, \
     compile_mpim_users
-
-
-def envvar(name, default):
-    """Create callable environment variable getter
-
-    :param str name: Name of environment variable
-    :param default: Default value to return in case it isn't defined
-    """
-    return lambda: os.environ.get(name, default)
-
-
-def flag_ennvar(name):
-    return os.environ.get(name) == '1'
+from slackviewer.utils.click import envvar, flag_ennvar
 
 
 def configure_app(app, archive, debug):
@@ -78,17 +65,21 @@ def configure_app(app, archive, debug):
               default=flag_ennvar("SEV_NO_BROWSER"),
               help="If you do not want a browser to open "
                    "automatically, set this.")
+@click.option('--test', is_flag=True, default=flag_ennvar("SEV_TEST"),
+              help="Runs in 'test' mode, i.e., this will do an archive extract, but will not start the server,"
+                   " and immediately quit.")
 @click.option('--debug', is_flag=True, default=flag_ennvar("FLASK_DEBUG"))
-def main(port, archive, ip, no_browser, debug):
+def main(port, archive, ip, no_browser, test, debug):
     if not archive:
         raise ValueError("Empty path provided for archive")
 
     configure_app(app, archive, debug)
 
-    if not no_browser:
+    if not no_browser and not test:
         webbrowser.open("http://{}:{}".format(ip, port))
 
-    app.run(
-        host=ip,
-        port=port
-    )
+    if not test:
+        app.run(
+            host=ip,
+            port=port
+        )

@@ -3,10 +3,12 @@ import json
 import os
 import zipfile
 import glob
-import tempfile
 import io
 
+import slackviewer
+from slackviewer.constants import SLACKVIEWER_TEMP_PATH
 from slackviewer.message import Message
+from slackviewer.utils.six import to_unicode, to_bytes
 
 
 def get_channel_list(path):
@@ -142,7 +144,7 @@ def get_groups(path):
     try:
         with io.open(os.path.join(path, "groups.json"), encoding="utf8") as f:
             return {u["id"]: u for u in json.load(f)}
-    except FileNotFoundError:
+    except IOError:
         return {}
 
 
@@ -150,7 +152,7 @@ def get_dms(path):
     try:
         with io.open(os.path.join(path, "dms.json"), encoding="utf8") as f:
             return {u["id"]: u for u in json.load(f)}
-    except FileNotFoundError:
+    except IOError:
         return {}
 
 
@@ -158,13 +160,20 @@ def get_mpims(path):
     try:
         with io.open(os.path.join(path, "mpims.json"), encoding="utf8") as f:
             return {u["id"]: u for u in json.load(f)}
-    except FileNotFoundError:
+    except IOError:
         return {}
 
 
-def SHA1_file(filepath):
+def SHA1_file(filepath, extra=""):
+    """Returns hex digest of SHA1 hash of file at filepath
+
+    :param str filepath: File to hash
+    :param bytes extra: Extra content added to raw read of file before taking hash
+    :return: hex digest of hash
+    :rtype: str
+    """
     with io.open(filepath, 'rb') as f:
-        return hashlib.sha1(f.read()).hexdigest()
+        return hashlib.sha1(f.read() + extra).hexdigest()
 
 
 def extract_archive(filepath):
@@ -176,8 +185,13 @@ def extract_archive(filepath):
         # Misuse of TypeError? :P
         raise TypeError("{} is not a zipfile".format(filepath))
 
-    archive_sha = SHA1_file(filepath)
-    extracted_path = os.path.join(tempfile.gettempdir(), "_slackviewer", archive_sha)
+    archive_sha = SHA1_file(
+        filepath=filepath,
+        # Add version of slackviewer to hash as well so we can invalidate the cached copy
+        #  if there are new features added
+        extra=to_bytes(slackviewer.__version__)
+    )
+    extracted_path = os.path.join(SLACKVIEWER_TEMP_PATH, archive_sha)
     if os.path.exists(extracted_path):
         print("{} already exists".format(extracted_path))
     else:
@@ -197,10 +211,12 @@ def extract_archive(filepath):
         with io.open(
             os.path.join(
                 extracted_path,
-                ".slackviewer_archive_info.json"
-            ), 'w+'
+                ".slackviewer_archive_info.json",
+            ), 'w+', encoding="utf-8"
         ) as f:
-            json.dump(u"%s" % archive_info, f)
+            s = json.dumps(archive_info, ensure_ascii=False)
+            s = to_unicode(s)
+            f.write(s)
 
     return extracted_path
 
