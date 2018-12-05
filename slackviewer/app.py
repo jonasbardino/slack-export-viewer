@@ -20,12 +20,8 @@ def channel_name(name):
                                  name=name.format(name=name),
                                  channels=sorted(channels),
                                  groups=sorted(groups),
-                                 # NOTE: dm_users is a list of dicts so no sort!
-                                 #dm_users=sorted(dm_users),
-                                 dm_users=sorted(dm_users, key=lambda d: d["id"]),
-                                 # NOTE: mpim_users is a list of dicts so no sort!
-                                 #mpim_users=sorted(mpim_users)
-                                 mpim_users=sorted(mpim_users, key=lambda d: d["name"]))
+                                 dm_users=dm_users,
+                                 mpim_users=mpim_users)
 
 
 @app.route("/group/<name>/")
@@ -40,12 +36,8 @@ def group_name(name):
                                  name=name.format(name=name),
                                  channels=sorted(channels),
                                  groups=sorted(groups),
-                                 # NOTE: dm_users is a list of dicts so no sort!
-                                 #dm_users=sorted(dm_users),
-                                 dm_users=sorted(dm_users, key=lambda d: d["id"]),
-                                 # NOTE: mpim_users is a list of dicts so no sort!
-                                 #mpim_users=sorted(mpim_users)
-                                 mpim_users=sorted(mpim_users, key=lambda d: d["name"]))
+                                 dm_users=dm_users,
+                                 mpim_users=mpim_users)
 
 
 @app.route("/dm/<id>/")
@@ -60,12 +52,8 @@ def dm_id(id):
                                  id=id.format(id=id),
                                  channels=sorted(channels),
                                  groups=sorted(groups),
-                                 # NOTE: dm_users is a list of dicts so no sort!
-                                 #dm_users=sorted(dm_users),
-                                 dm_users=sorted(dm_users, key=lambda d: d["id"]),
-                                 # NOTE: mpim_users is a list of dicts so no sort!
-                                 #mpim_users=sorted(mpim_users)
-                                 mpim_users=sorted(mpim_users, key=lambda d: d["name"]))
+                                 dm_users=dm_users,
+                                 mpim_users=mpim_users)
 
 
 @app.route("/mpim/<name>/")
@@ -80,12 +68,8 @@ def mpim_name(name):
                                  name=name.format(name=name),
                                  channels=sorted(channels),
                                  groups=sorted(groups),
-                                 # NOTE: dm_users is a list of dicts so no sort!
-                                 #dm_users=sorted(dm_users),
-                                 dm_users=sorted(dm_users, key=lambda d: d["id"]),
-                                 # NOTE: mpim_users is a list of dicts so no sort!
-                                 #mpim_users=sorted(mpim_users)
-                                 mpim_users=sorted(mpim_users, key=lambda d: d["name"]))
+                                 dm_users=dm_users,
+                                 mpim_users=mpim_users)
 
 
 @app.route("/")
